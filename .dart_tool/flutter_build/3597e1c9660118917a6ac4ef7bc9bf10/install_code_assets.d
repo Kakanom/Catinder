@@ -1,1 +1,0 @@
- /Users/marksmirnov/Documents/flutter/catinder/.dart_tool/flutter_build/3597e1c9660118917a6ac4ef7bc9bf10/native_assets.json: 
