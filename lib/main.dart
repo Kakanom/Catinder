@@ -31,7 +31,7 @@ class _CatinderAppState extends State<CatinderApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Catinder',
+      title: 'Catinder PRO',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         brightness: Brightness.light,

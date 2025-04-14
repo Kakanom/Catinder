@@ -6,6 +6,7 @@ import '../widgets/cat_card.dart';
 import '../widgets/like_button.dart';
 import '../widgets/dislike_button.dart';
 import 'settings_screen.dart';
+import 'liked_cats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final void Function(bool) onThemeChanged;
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final CardSwiperController _swiperController = CardSwiperController();
   List<Cat> cats = [];
+  List<Cat> likedCats = [];
   int likeCount = 0;
   int streakCount = 0;
   bool showSecretCat = false;
@@ -38,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     fetchCats();
-
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this,
@@ -50,34 +51,33 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> fetchCats() async {
     try {
+      setState(() => cats = []);
       final fetchedCats = await CatApi.fetchCats();
       setState(() {
         cats = fetchedCats;
         showSecretCat = false;
       });
     } catch (e) {
-      print('Error fetching cats: $e');
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Failed to load cats: $e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  Future<void> _playMeowSound() async {
-    if (widget.soundEnabled) {
-      await _audioPlayer.play(AssetSource('meow.mp3'));
-    }
-  }
-
-  void resetProgress() {
+  void _removeLikedCat(Cat cat) {
     setState(() {
-      likeCount = 0;
-      streakCount = 0;
-      showSecretCat = false;
+      likedCats.remove(cat);
+      likeCount = likedCats.length;
     });
   }
 
@@ -85,12 +85,21 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catinder'),
+        title: const Text('Catinder PRO'),
         actions: [
+          IconButton(
+            icon: Image.asset('assets/images/cat_heart2.png', width: 40),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LikedCatsScreen(
+                  likedCats: likedCats,
+                  onRemove: _removeLikedCat,
+                ),
+              ),
+            ),
+          ),
           GestureDetector(
-            onTapDown: (_) => _animationController.forward(),
-            onTapUp: (_) => _animationController.reverse(),
-            onTapCancel: () => _animationController.reverse(),
             onTap: () async {
               await Navigator.push(
                 context,
@@ -100,21 +109,18 @@ class _HomeScreenState extends State<HomeScreen>
                     onSoundChanged: widget.onSoundChanged,
                     isDarkMode: Theme.of(context).brightness == Brightness.dark,
                     soundEnabled: widget.soundEnabled,
-                    onResetProgress: resetProgress,
+                    onResetProgress: () => setState(() {
+                      likeCount = 0;
+                      streakCount = 0;
+                      likedCats.clear();
+                    }),
                   ),
                 ),
               );
             },
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  'assets/icon/app_icon.png',
-                  width: 125,
-                  height: 125,
-                ),
-              ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset('assets/icon/app_icon.png', width: 40),
             ),
           ),
         ],
@@ -143,10 +149,13 @@ class _HomeScreenState extends State<HomeScreen>
                   onPressed: () =>
                       _swiperController.swipe(CardSwiperDirection.left),
                 ),
-                Text(
-                  'Likes: $likeCount',
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                Column(
+                  children: [
+                    Text('Likes: $likeCount',
+                        style: const TextStyle(fontSize: 18)),
+                    Text('Streak: $streakCount',
+                        style: const TextStyle(fontSize: 14)),
+                  ],
                 ),
                 LikeButton(
                   onPressed: () =>
@@ -160,30 +169,38 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  bool _onSwipe(
-      int previousIndex, int? currentIndex, CardSwiperDirection direction) {
-    setState(() {
-      if (direction == CardSwiperDirection.right) {
-        likeCount++;
-        streakCount++;
-        if (streakCount == 10) {
-          cats.add(Cat.getSecretCat());
-          showSecretCat = true;
-          streakCount = 0;
-          _playMeowSound();
-        }
-      } else {
+bool _onSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) {
+  setState(() {
+    if (direction == CardSwiperDirection.right) {
+      likeCount++;
+      streakCount++;
+      likedCats.insert(0, Cat(
+        id: cats[previousIndex].id,
+        url: cats[previousIndex].url,
+        breedName: cats[previousIndex].breedName,
+        breedDescription: cats[previousIndex].breedDescription,
+        likedAt: DateTime.now(),
+      ));
+      if (streakCount == 10) {
+        cats.add(Cat.getSecretCat());
+        showSecretCat = true;
         streakCount = 0;
+        _playMeowSound();
       }
-
-      if (showSecretCat && currentIndex == cats.length - 1) {
-        showSecretCat = false;
-      }
-    });
-
-    if (currentIndex == cats.length - 2 && !showSecretCat) {
-      fetchCats();
+    } else {
+      streakCount = 0;
     }
-    return true;
+  });
+
+  if (currentIndex == cats.length - 2 && !showSecretCat) {
+    fetchCats();
+  }
+  return true;
+}
+
+  Future<void> _playMeowSound() async {
+    if (widget.soundEnabled) {
+      await _audioPlayer.play(AssetSource('meow.mp3'));
+    }
   }
 }

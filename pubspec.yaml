@@ -17,6 +17,7 @@ dependencies:
   shared_preferences: ^2.5.2
   flutter_svg: ^2.0.10+1
   audioplayers: ^6.4.0
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +29,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/app_icon.png
+    - assets/images/cat_heart2.png
     - assets/meow.mp3
 
 flutter_icons:
@@ -36,7 +38,7 @@ flutter_icons:
   image_path: "assets/icon/app_icon.png"
 
 flutter_launcher_icons:
-  android: "icon/app_icon.png"
+  android: "assets/icon/app_icon.png"
   ios: true
-  image_path: "assets/app_icon.png"
-  adaptive_icon_foreground: "assets/app_icon.png"
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"

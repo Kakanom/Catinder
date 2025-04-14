@@ -30,11 +30,15 @@ class CatCard extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: CachedNetworkImage(
-                imageUrl: cat.url,
-                fit: BoxFit.cover,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
+              child: Hero(
+                tag: 'cat-${cat.id}',
+                child: CachedNetworkImage(
+                  imageUrl: cat.url,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
               ),
             ),
             Padding(
