@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
-import '../api/cat_api.dart';
+import '../../domain/entities/cat.dart';
 
 class DetailScreen extends StatelessWidget {
   final Cat cat;
@@ -52,7 +52,21 @@ class DetailScreen extends StatelessWidget {
                 errorWidget: (context, url, error) => Container(
                   height: 300,
                   color: Colors.grey[200],
-                  child: const Icon(Icons.error),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, color: Colors.red, size: 48),
+                      const SizedBox(height: 8),
+                      const Text("Cat couldn't be downloaded"),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          (context as Element).markNeedsBuild();
+                        },
+                        child: const Text('Try Again'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
