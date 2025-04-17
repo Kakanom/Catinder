@@ -18,15 +18,15 @@
 
 ### Демонстрация
 #### Светлая тема
-![home_light](showcase/home_light.jpg)
-![detail_light](showcase/detail_light.jpg)
-![settings_light](showcase/settings_light.jpg)
+![home_light](showcase/home_light.png)
+![detail_light](showcase/detail_light.png)
+![settings_light](showcase/settings_light.png)
 ![liked_light](showcase/liked_light.png)
 
 #### Темная тема
-![home_dark](showcase/home_dark.jpg)
-![detail_dark](showcase/detail_dark.jpg)
-![settings_dark](showcase/settings_dark.jpg)
+![home_dark](showcase/home_dark.png)
+![detail_dark](showcase/detail_dark.png)
+![settings_dark](showcase/settings_dark.png)
 ![liked_dark](showcase/liked_dark.png)
 
 ### Релиз
