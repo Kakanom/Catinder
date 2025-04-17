@@ -12,7 +12,8 @@ void setupDependencies() {
   getIt.registerSingleton<CatApiService>(CatApiService());
 
   // Repositories
-  getIt.registerSingleton<CatRepository>(CatRepositoryImpl(getIt<CatApiService>()));
+  getIt.registerSingleton<CatRepository>(
+      CatRepositoryImpl(getIt<CatApiService>()));
 
   // Use Cases
   getIt.registerSingleton<FetchCats>(FetchCats(getIt<CatRepository>()));

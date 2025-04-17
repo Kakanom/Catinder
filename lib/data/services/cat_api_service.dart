@@ -7,7 +7,8 @@ class CatApiService {
   Future<List<CatModel>> fetchCats() async {
     try {
       final response = await http.get(
-        Uri.parse('https://api.thecatapi.com/v1/images/search?limit=10&has_breeds=1'),
+        Uri.parse(
+            'https://api.thecatapi.com/v1/images/search?limit=10&has_breeds=1'),
         headers: {'x-api-key': dotenv.env['CAT_API_KEY'] ?? ''},
       );
 

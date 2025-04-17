@@ -12,7 +12,8 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reset Progress'),
-        content: const Text('Are you sure you want to reset your likes and streak?'),
+        content:
+            const Text('Are you sure you want to reset your likes and streak?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -50,7 +51,8 @@ class SettingsScreen extends StatelessWidget {
                 SwitchListTile(
                   title: const Text('Dark Mode'),
                   value: state.themeMode == ThemeMode.dark,
-                  onChanged: (value) => context.read<CatBloc>().add(ToggleThemeEvent(value)),
+                  onChanged: (value) =>
+                      context.read<CatBloc>().add(ToggleThemeEvent(value)),
                 ),
                 const SizedBox(height: 16),
                 const Text(

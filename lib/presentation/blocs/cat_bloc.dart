@@ -22,7 +22,8 @@ class CatBloc extends Bloc<CatEvent, CatState> {
     add(FetchCatsEvent());
   }
 
-  Future<void> _onFetchCats(FetchCatsEvent event, Emitter<CatState> emit) async {
+  Future<void> _onFetchCats(
+      FetchCatsEvent event, Emitter<CatState> emit) async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       emit(state.copyWith(error: 'No internet connection'));
@@ -41,11 +42,13 @@ class CatBloc extends Bloc<CatEvent, CatState> {
   Future<void> _onSwipeCat(SwipeCatEvent event, Emitter<CatState> emit) async {
     // Validate previousIndex
     if (event.previousIndex < 0 || event.previousIndex >= state.cats.length) {
-      print('Invalid previousIndex: ${event.previousIndex}, cats length: ${state.cats.length}');
+      print(
+          'Invalid previousIndex: ${event.previousIndex}, cats length: ${state.cats.length}');
       return;
     }
 
-    print('SwipeCatEvent: previousIndex=${event.previousIndex}, direction=${event.direction}, currentStreak=${state.streakCount}');
+    print(
+        'SwipeCatEvent: previousIndex=${event.previousIndex}, direction=${event.direction}, currentStreak=${state.streakCount}');
 
     if (event.direction == CardSwiperDirection.right) {
       final newLikeCount = state.likeCount + 1;
@@ -100,7 +103,8 @@ class CatBloc extends Bloc<CatEvent, CatState> {
   }
 
   void _onToggleTheme(ToggleThemeEvent event, Emitter<CatState> emit) {
-    emit(state.copyWith(themeMode: event.isDark ? ThemeMode.dark : ThemeMode.light));
+    emit(state.copyWith(
+        themeMode: event.isDark ? ThemeMode.dark : ThemeMode.light));
   }
 
   void _onToggleSound(ToggleSoundEvent event, Emitter<CatState> emit) {

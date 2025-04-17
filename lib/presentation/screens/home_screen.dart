@@ -17,7 +17,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final CardSwiperController _swiperController = CardSwiperController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -67,13 +68,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 icon: Image.asset('assets/images/cat_heart2.png', width: 40),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LikedCatsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const LikedCatsScreen()),
                 ),
               ),
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -91,11 +94,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         controller: _swiperController,
                         cardsCount: state.cats.length,
                         onSwipe: (previousIndex, currentIndex, direction) {
-                          print('CardSwiper onSwipe: previousIndex=$previousIndex, direction=$direction');
-                          context.read<CatBloc>().add(SwipeCatEvent(previousIndex, direction));
+                          print(
+                              'CardSwiper onSwipe: previousIndex=$previousIndex, direction=$direction');
+                          context
+                              .read<CatBloc>()
+                              .add(SwipeCatEvent(previousIndex, direction));
                           return true;
                         },
-                        cardBuilder: (context, index, horizontalOffsetPercentage, verticalOffsetPercentage) {
+                        cardBuilder: (context,
+                            index,
+                            horizontalOffsetPercentage,
+                            verticalOffsetPercentage) {
                           return CatCard(cat: state.cats[index]);
                         },
                       ),
@@ -113,8 +122,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                     Column(
                       children: [
-                        Text('Likes: ${state.likeCount}', style: const TextStyle(fontSize: 18)),
-                        Text('Streak: ${state.streakCount}', style: const TextStyle(fontSize: 14)),
+                        Text('Likes: ${state.likeCount}',
+                            style: const TextStyle(fontSize: 18)),
+                        Text('Streak: ${state.streakCount}',
+                            style: const TextStyle(fontSize: 14)),
                       ],
                     ),
                     LikeButton(

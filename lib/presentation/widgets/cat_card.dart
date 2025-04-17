@@ -56,7 +56,8 @@ class CatCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           ElevatedButton(
-                            onPressed: () => (context as Element).markNeedsBuild(),
+                            onPressed: () =>
+                                (context as Element).markNeedsBuild(),
                             child: const Text('Повторить'),
                           ),
                         ],
