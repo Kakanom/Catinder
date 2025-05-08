@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../blocs/cat_bloc.dart';
 import '../blocs/cat_event.dart';
 import '../blocs/cat_state.dart';
@@ -9,6 +11,7 @@ import '../widgets/like_button.dart';
 import '../widgets/dislike_button.dart';
 import 'settings_screen.dart';
 import 'liked_cats_screen.dart';
+import '../../di/setup.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen>
   final CardSwiperController _swiperController = CardSwiperController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  bool _isConnected = true;
 
   @override
   void initState() {
@@ -33,14 +38,38 @@ class _HomeScreenState extends State<HomeScreen>
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+
+    _connectivitySubscription =
+        getIt<Connectivity>().onConnectivityChanged.listen((result) {
+      final wasConnected = _isConnected;
+      _isConnected = result != ConnectivityResult.none;
+
+      if (wasConnected && !_isConnected) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No Internet Connection'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else if (!wasConnected && _isConnected) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Internet Restored'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        context.read<CatBloc>().add(FetchCatsEvent());
+      }
+    });
   }
 
   void _showNoConnectionDialog() {
+    if (!_isConnected) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Нет интернета'),
-        content: const Text('Проверьте подключение и попробуйте снова.'),
+        title: const Text('No Internet'),
+        content: const Text('Check the Internet and try again'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -88,26 +117,28 @@ class _HomeScreenState extends State<HomeScreen>
           body: Column(
             children: [
               Expanded(
-                child: state.isLoading || state.cats.isEmpty
+                child: state.isLoading && state.cats.isEmpty
                     ? const Center(child: CircularProgressIndicator())
-                    : CardSwiper(
-                        controller: _swiperController,
-                        cardsCount: state.cats.length,
-                        onSwipe: (previousIndex, currentIndex, direction) {
-                          print(
-                              'CardSwiper onSwipe: previousIndex=$previousIndex, direction=$direction');
-                          context
-                              .read<CatBloc>()
-                              .add(SwipeCatEvent(previousIndex, direction));
-                          return true;
-                        },
-                        cardBuilder: (context,
-                            index,
-                            horizontalOffsetPercentage,
-                            verticalOffsetPercentage) {
-                          return CatCard(cat: state.cats[index]);
-                        },
-                      ),
+                    : state.cats.isEmpty
+                        ? const Center(child: Text('No Cats fetched'))
+                        : CardSwiper(
+                            controller: _swiperController,
+                            cardsCount: state.cats.length,
+                            onSwipe: (previousIndex, currentIndex, direction) {
+                              print(
+                                  'CardSwiper onSwipe: previousIndex=$previousIndex, direction=$direction');
+                              context
+                                  .read<CatBloc>()
+                                  .add(SwipeCatEvent(previousIndex, direction));
+                              return true;
+                            },
+                            cardBuilder: (context,
+                                index,
+                                horizontalOffsetPercentage,
+                                verticalOffsetPercentage) {
+                              return CatCard(cat: state.cats[index]);
+                            },
+                          ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -148,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     _animationController.dispose();
     _swiperController.dispose();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 }

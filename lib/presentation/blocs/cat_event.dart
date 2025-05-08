@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import '../../domain/entities/cat.dart';
+import "../../domain/entities/cat.dart";
 
 abstract class CatEvent extends Equatable {
   const CatEvent();

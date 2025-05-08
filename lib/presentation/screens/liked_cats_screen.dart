@@ -5,6 +5,7 @@ import '../blocs/cat_bloc.dart';
 import '../blocs/cat_event.dart';
 import '../blocs/cat_state.dart';
 import 'detail_screen.dart';
+import "../../domain/entities/cat.dart";
 
 class LikedCatsScreen extends StatefulWidget {
   const LikedCatsScreen({Key? key}) : super(key: key);
